@@ -1,0 +1,4 @@
+com/javacodegeeks/example/Main.class
+com/javacodegeeks/example/MainSecurity.class
+com/javacodegeeks/example/WotdEndpoint.class
+com/javacodegeeks/example/MainHealthIndicator.class
