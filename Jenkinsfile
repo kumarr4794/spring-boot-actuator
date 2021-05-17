@@ -23,14 +23,9 @@ node('master') {
 			deployToECR()
 		}
 
-		if ( params.buildType == deploy || buildDeploy ){
-
-			stage("EKS Deploy") {
-				//deploy()
-
-			}			
-		}
-
+		stage("EKS Deploy") {
+			deploy()
+		}			
 
 } catch (Exception e) {
                 println("Caught exception: " + e)
@@ -63,6 +58,12 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: awsCred
 //}
 		}
 	}
+}
+
+
+def deploy()
+{
+	println 'hello'
 }
 
 
