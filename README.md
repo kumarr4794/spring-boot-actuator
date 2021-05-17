@@ -16,6 +16,7 @@ Managed to make CI work build,create docker,push to ecr. But couldn't test it on
 
  - Ingress - Available under istio/
    - New NS and gateway and Virtual service for rule /actutor/health -> serviceName : 8080
+   ref : https://istio.io/latest/docs/tasks/traffic-management/ingress/ingress-control/
 
  - Horizontal Pod AutoScaling: Note I've added a CPU scaling in deployment.yaml. 
    - One of way to achieve HPA based on requests/min.
