@@ -1,9 +1,11 @@
 #!groovy
 
-awsCredentialsId = 'aws.creds'
+awsCredentialsId = 'aws.creds1'
 awsRegion = 'us-west-2'
 ecrUrl = 'https://407487714479.dkr.ecr.us-west-2.amazonaws.com'
+url = '407487714479.dkr.ecr.us-west-2.amazonaws.com'
 docker_image_name = 'spring-boot-actuator'
+tagName = 'latest'
 
 node('master') {
 	
@@ -32,30 +34,33 @@ node('master') {
 
 } catch (Exception e) {
                 println("Caught exception: " + e)
-                error = catchException exception: e
+                currentBuild.result = hudson.model.Result.FAILURE.toString()
+               // error = catchException exception: e
             } finally {
                 println("CurrentBuild result: " + currentBuild.result)
-                Notify()
+                Notify() 
             }
 
  }
 
 
 def build() {
-	sh "mvn clean install -skipDTests"
-	sh "cp /target/spring-boot-0.0.1-SNAPSHOT.jar	infra/"
+	sh "mvn clean install -DskipTests"
+	sh "pwd && ls -a"
+	sh "cp target/spring-boot-actuator-0.0.1-SNAPSHOT.jar infra/"
 }
+
 
 def deployToECR(){
 dir('infra/') {
 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: awsCredentialsId, usernameVariable: 'ACCESS_KEY', passwordVariable: 'SECRET_KEY']]) {
-docker.withRegistry(ecrUrl, awsCredentialsId){
+ //docker.withRegistry('ecrUrl', 'ecr:us-west-2:awsCredentialsId'){ // Error with docker auth
 	def login_cmd = sh(script: "AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} AWS_DEFAULT_REGION=${awsRegion} aws ecr get-login --no-include-email", returnStdout: true)
 	sh "#!/bin/sh -e\n ${login_cmd}"
     new_image = docker.build(docker_image_name)
-    new_image.push('latest')
-    new_image.push("${tagName}")
-			}
+    sh "docker push ${url}/${docker_image_name}:${tagName}"
+   // new_image.push("${url}:${tagName}")
+//}
 		}
 	}
 }
