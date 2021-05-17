@@ -6,6 +6,7 @@ ecrUrl = 'https://407487714479.dkr.ecr.us-west-2.amazonaws.com'
 url = '407487714479.dkr.ecr.us-west-2.amazonaws.com'
 docker_image_name = 'spring-boot-actuator'
 tagName = 'latest'
+clusterName = 'demo-eks'
 
 node('master') {
 	
@@ -63,7 +64,12 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: awsCred
 
 def deploy()
 {
-	println 'hello'
+	withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: awsCredentialsId, usernameVariable: 'ACCESS_KEY', passwordVariable: 'SECRET_KEY']]) {
+		sh "AWS_ACCESS_KEY_ID=${ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${SECRET_KEY} AWS_DEFAULT_REGION=${awsRegion}  CLUSTER_NAME=${clusterName}"
+		sh "aws eks --region ${awsRegion} update-kubeconfig --name ${clusterName}"
+		sh "kubectl apply -f ${WORKSPACE}/deployment/deployment.yaml"	// For demostration hardcoded Image in yaml, it can be updated using sed & shell file.
+	}
+	
 }
 
 
